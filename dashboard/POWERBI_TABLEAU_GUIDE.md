@@ -33,28 +33,21 @@ Create a dedicated **Measures Table** (`_Measures`) and add the following DAX ca
 
 ### Key Metrics:
 ```dax
-// Total Titles Count
 Total Titles = COUNTROWS(ott_titles)
 
-// Movies Count & Mix %
 Movie Count = CALCULATE(COUNTROWS(ott_titles), ott_titles[type] = "Movie")
 Movie Share Pct = DIVIDE([Movie Count], [Total Titles], 0)
 
-// TV Shows Count & Mix %
 TV Show Count = CALCULATE(COUNTROWS(ott_titles), ott_titles[type] = "Tv Show")
 TV Show Share Pct = DIVIDE([TV Show Count], [Total Titles], 0)
 
-// Average Rating (Ignoring Missing)
 Avg Rating Score = AVERAGE(ott_titles[rating_score])
 
-// Average Popularity Score
 Avg Popularity = AVERAGE(ott_titles[popularity])
 
-// Median Benchmarks for Dynamic Quadrant Segmentation
 Median Rating Benchmark = MEDIAN(ott_titles[rating_score])
 Median Popularity Benchmark = MEDIAN(ott_titles[popularity])
 
-// Dynamic Segment Classification DAX
 Strategic Content Segment = 
 VAR R = SELECTEDVALUE(ott_titles[rating_score])
 VAR P = SELECTEDVALUE(ott_titles[popularity])

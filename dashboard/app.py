@@ -1,11 +1,3 @@
-"""
-StreamPulse Analytics — OTT Content Strategy & Audience Intelligence
-An interactive, multi-page data exploration tool for OTT catalog strategy.
-
-Author: Ranjith Kumar
-Portfolio Project: Python • DuckDB • SQL • Streamlit
-"""
-
 import os
 import streamlit as st
 import pandas as pd
@@ -13,9 +5,6 @@ import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
 
-# -----------------------------------------------------------------------------
-# App Configuration & Page Layout
-# -----------------------------------------------------------------------------
 st.set_page_config(
     page_title="StreamPulse | OTT Content Strategy",
     page_icon="🎬",
@@ -23,7 +12,6 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom Styling (Dark slate aesthetic with Netflix red & vibrant cyan accents)
 st.markdown("""
 <style>
     .main-header {
@@ -63,9 +51,6 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# -----------------------------------------------------------------------------
-# Data Loading & Caching
-# -----------------------------------------------------------------------------
 @st.cache_data
 def load_ott_data():
     current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -81,9 +66,6 @@ def load_ott_data():
 
 df_full = load_ott_data()
 
-# -----------------------------------------------------------------------------
-# Sidebar Navigation & Global Controls
-# -----------------------------------------------------------------------------
 st.sidebar.markdown("### 🎬 StreamPulse Analytics")
 st.sidebar.caption("OTT Catalog Intelligence & Strategy Platform")
 st.sidebar.markdown("**Portfolio Project by Ranjith Kumar**")
@@ -102,19 +84,15 @@ selected_page = st.sidebar.radio("Navigate Pages", nav_pages)
 st.sidebar.markdown("---")
 st.sidebar.markdown("#### ⚙️ Catalog Filters")
 
-# Content format filter
 type_choice = st.sidebar.selectbox("Content Format", ["All Formats", "Movie", "Tv Show"])
 
-# Release year slider
 min_yr = int(df_full['release_year'].min())
 max_yr = int(df_full['release_year'].max())
 selected_years = st.sidebar.slider("Release Window", min_yr, max_yr, (1995, max_yr))
 
-# Strategic segment filter
 segment_choices = ["All Segments"] + sorted(df_full['content_segment'].dropna().unique().tolist())
 selected_segment = st.sidebar.selectbox("Strategic Segment", segment_choices)
 
-# Apply global filters
 df_filtered = df_full[
     (df_full['release_year'] >= selected_years[0]) & 
     (df_full['release_year'] <= selected_years[1])
@@ -128,14 +106,10 @@ st.sidebar.markdown("---")
 st.sidebar.markdown(f"**Filtered Titles:** `{len(df_filtered):,}` of `{len(df_full):,}`")
 st.sidebar.caption("Data: Curated Open Streaming Catalog (8,806 titles)")
 
-# -----------------------------------------------------------------------------
-# PAGE 1: EXECUTIVE OVERVIEW
-# -----------------------------------------------------------------------------
 if selected_page == nav_pages[0]:
     st.markdown('<div class="main-header">📊 Executive Overview</div>', unsafe_allow_html=True)
     st.markdown('<div class="sub-header">Platform catalog baseline, format split, and category dominance.</div>', unsafe_allow_html=True)
 
-    # Calculate Core KPIs
     total_titles = len(df_filtered)
     movies = (df_filtered['type'] == 'Movie').sum()
     series = (df_filtered['type'] == 'Tv Show').sum()
@@ -146,7 +120,6 @@ if selected_page == nav_pages[0]:
     top_genre = df_filtered['genre'].mode()[0] if not df_filtered.empty else "N/A"
     top_genre_count = (df_filtered['genre'] == top_genre).sum() if not df_filtered.empty else 0
 
-    # Top KPI Metrics Row
     k1, k2, k3, k4, k5 = st.columns(5)
     with k1:
         st.metric("Total Catalog Titles", f"{total_titles:,}")
@@ -161,7 +134,6 @@ if selected_page == nav_pages[0]:
 
     st.markdown("---")
 
-    # Visualizations Row
     col_chart1, col_chart2 = st.columns([1, 2])
     with col_chart1:
         st.subheader("Movie vs. TV Show Ratio")
@@ -196,7 +168,6 @@ if selected_page == nav_pages[0]:
         fig_bar.update_layout(yaxis=dict(autorange="reversed"), coloraxis_showscale=False, margin=dict(t=10, b=10, l=10, r=10))
         st.plotly_chart(fig_bar, use_container_width=True)
 
-    # Narrative Insight Box
     st.markdown(f"""
     <div class="insight-box">
         <b>💡 Analyst Note:</b> The catalog is heavily anchored around <b>{top_genre}</b> ({top_genre_count:,} titles, {(top_genre_count/total_titles*100):.1f}% share) and <b>Comedies</b>. 
@@ -204,14 +175,10 @@ if selected_page == nav_pages[0]:
     </div>
     """, unsafe_allow_html=True)
 
-# -----------------------------------------------------------------------------
-# PAGE 2: CONTENT TRENDS & GROWTH
-# -----------------------------------------------------------------------------
 elif selected_page == nav_pages[1]:
     st.markdown('<div class="main-header">📈 Content Trends & Release Evolution</div>', unsafe_allow_html=True)
     st.markdown('<div class="sub-header">Longitudinal tracking of release volume, format shifts, and genre expansion.</div>', unsafe_allow_html=True)
 
-    # Aggregate by Year and Format
     yearly_df = df_filtered.groupby(['release_year', 'type']).size().reset_index(name='titles')
     yearly_totals = df_filtered.groupby('release_year').size().reset_index(name='total')
     yearly_totals['cumulative'] = yearly_totals['total'].cumsum()
@@ -264,9 +231,6 @@ elif selected_page == nav_pages[1]:
     </div>
     """, unsafe_allow_html=True)
 
-# -----------------------------------------------------------------------------
-# PAGE 3: LANGUAGE & GLOBAL MARKETS
-# -----------------------------------------------------------------------------
 elif selected_page == nav_pages[2]:
     st.markdown('<div class="main-header">🌍 Language & Global Markets</div>', unsafe_allow_html=True)
     st.markdown('<div class="sub-header">Evaluating international catalog penetration, language diversity, and market efficiency.</div>', unsafe_allow_html=True)
@@ -330,9 +294,6 @@ elif selected_page == nav_pages[2]:
     </div>
     """, unsafe_allow_html=True)
 
-# -----------------------------------------------------------------------------
-# PAGE 4: RATINGS VS POPULARITY
-# -----------------------------------------------------------------------------
 elif selected_page == nav_pages[3]:
     st.markdown('<div class="main-header">⭐ Ratings & Popularity Dynamics</div>', unsafe_allow_html=True)
     st.markdown('<div class="sub-header">Investigating the relationship between critic/viewer ratings and platform popularity.</div>', unsafe_allow_html=True)
@@ -391,14 +352,10 @@ elif selected_page == nav_pages[3]:
     </div>
     """, unsafe_allow_html=True)
 
-# -----------------------------------------------------------------------------
-# PAGE 5: 2x2 CONTENT SEGMENTATION
-# -----------------------------------------------------------------------------
 elif selected_page == nav_pages[4]:
     st.markdown('<div class="main-header">🎯 2x2 Strategic Content Segmentation</div>', unsafe_allow_html=True)
     st.markdown('<div class="sub-header">Categorizing catalog titles into actionable licensing, marketing, and de-licensing tiers.</div>', unsafe_allow_html=True)
 
-    # Segment Summary Table
     seg_stats = df_filtered.groupby('content_segment').agg(
         titles=('title_id', 'count'),
         avg_rating=('rating_score', 'mean'),
@@ -408,7 +365,6 @@ elif selected_page == nav_pages[4]:
     ).reset_index()
     seg_stats['catalog_share'] = (seg_stats['titles'] / len(df_filtered) * 100).round(1)
 
-    # 4 Quadrant Cards
     c1, c2, c3, c4 = st.columns(4)
     quadrants = [
         ("Blockbusters", "High Rating + High Pop", "#10B981", "Flagship titles driving new signups, critical prestige, and cultural buzz."),
@@ -468,9 +424,6 @@ elif selected_page == nav_pages[4]:
         gems_df = df_filtered[df_filtered['content_segment'].str.contains('Hidden Gems', na=False)].sort_values(by=['rating_score', 'popularity'], ascending=[False, True]).head(6)
         st.dataframe(gems_df[['title', 'genre', 'country', 'rating_score', 'popularity']], hide_index=True, use_container_width=True)
 
-# -----------------------------------------------------------------------------
-# PAGE 6: TITLE EXPLORER & CATALOG AUDIT
-# -----------------------------------------------------------------------------
 elif selected_page == nav_pages[5]:
     st.markdown('<div class="main-header">🔍 Title Explorer & Catalog Auditor</div>', unsafe_allow_html=True)
     st.markdown('<div class="sub-header">Interactive search, multi-attribute filtering, and data export for business reviews.</div>', unsafe_allow_html=True)
@@ -485,7 +438,6 @@ elif selected_page == nav_pages[5]:
     with f3:
         min_pop = st.slider("Min Popularity", 0.0, 100.0, 0.0, 5.0)
 
-    # Filter data
     df_exp = df_filtered.copy()
     if search_kw:
         df_exp = df_exp[df_exp['title'].str.contains(search_kw, case=False, na=False)]
@@ -519,7 +471,6 @@ elif selected_page == nav_pages[5]:
         use_container_width=True
     )
 
-    # CSV Export Button
     csv_bytes = df_exp.to_csv(index=False).encode('utf-8')
     st.download_button(
         label="📥 Download Filtered Data as CSV (Tableau / Power BI)",
@@ -528,8 +479,5 @@ elif selected_page == nav_pages[5]:
         mime="text/csv"
     )
 
-# -----------------------------------------------------------------------------
-# Footer
-# -----------------------------------------------------------------------------
 st.markdown("---")
 st.caption("StreamPulse Analytics • Created by Ranjith Kumar • Portfolio Project for Entertainment Data Strategy")

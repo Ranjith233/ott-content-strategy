@@ -1,14 +1,3 @@
--- =====================================================================
--- OTT Content Strategy & Audience Insights — Analytical Queries
--- Author: Ranjith Kumar
--- Dialect: PostgreSQL / DuckDB / SQLite (3.25+)
--- =====================================================================
-
--- ---------------------------------------------------------------------
--- 1. EXECUTIVE KPI BASELINE
--- ---------------------------------------------------------------------
-
--- Overall catalog volume, format split (Movies vs TV Series), and mean scores
 SELECT 
     COUNT(*) AS total_titles,
     SUM(CASE WHEN type = 'Movie' THEN 1 ELSE 0 END) AS movie_count,
@@ -19,7 +8,6 @@ SELECT
     ROUND(AVG(popularity), 2) AS overall_avg_popularity
 FROM ott_titles;
 
--- Identify the single top genre anchoring the catalog
 SELECT 
     genre, 
     COUNT(*) AS titles,
@@ -30,12 +18,6 @@ GROUP BY genre
 ORDER BY titles DESC 
 LIMIT 1;
 
--- ---------------------------------------------------------------------
--- 2. CONTENT TRENDS & FORMAT SHIFTS OVER TIME
--- ---------------------------------------------------------------------
-
--- Business Question: How has the catalog changed over time?
--- Annual release counts grouped by content format
 SELECT 
     release_year, 
     type, 
@@ -44,8 +26,6 @@ FROM ott_titles
 GROUP BY release_year, type 
 ORDER BY release_year ASC, type ASC;
 
--- Year-over-Year (YoY) content growth and cumulative catalog trajectory
--- Using LAG() to see how the expansion accelerated after 2015
 WITH annual_summary AS (
     SELECT 
         release_year,
@@ -69,7 +49,6 @@ SELECT
 FROM annual_summary
 ORDER BY release_year ASC;
 
--- Track how dominant genres evolved across release eras
 SELECT 
     genre,
     SUM(CASE WHEN release_year < 2010 THEN 1 ELSE 0 END) AS era_pre_2010,
@@ -81,12 +60,6 @@ GROUP BY genre
 ORDER BY total_titles DESC
 LIMIT 10;
 
--- ---------------------------------------------------------------------
--- 3. LANGUAGE & GLOBAL MARKET ANALYSIS
--- ---------------------------------------------------------------------
-
--- Business Question: Which countries or markets contribute the most titles?
--- Top 15 producing countries ranked by volume, average rating, and popularity
 SELECT 
     country,
     COUNT(*) AS title_count,
@@ -99,7 +72,6 @@ GROUP BY country
 ORDER BY title_count DESC
 LIMIT 15;
 
--- Top languages by title count and average viewer reception
 SELECT 
     language,
     COUNT(*) AS title_count,
@@ -111,11 +83,6 @@ GROUP BY language
 ORDER BY title_count DESC
 LIMIT 10;
 
--- ---------------------------------------------------------------------
--- 4. RATINGS & POPULARITY DYNAMICS
--- ---------------------------------------------------------------------
-
--- Top 10 genres by title volume
 SELECT 
     genre, 
     COUNT(*) AS titles 
@@ -125,7 +92,6 @@ GROUP BY genre
 ORDER BY titles DESC 
 LIMIT 10;
 
--- Average popularity by content format (Movies vs Series)
 SELECT 
     type, 
     ROUND(AVG(popularity), 2) AS avg_popularity 
@@ -133,7 +99,6 @@ FROM ott_titles
 WHERE popularity IS NOT NULL 
 GROUP BY type;
 
--- Maturity rating distribution across the catalog
 SELECT 
     rating AS maturity_rating,
     COUNT(*) AS title_count,
@@ -144,7 +109,6 @@ FROM ott_titles
 GROUP BY rating
 ORDER BY title_count DESC;
 
--- Genre performance comparison (Volume, Rating, and Popularity)
 SELECT 
     genre,
     COUNT(*) AS titles,
@@ -156,11 +120,6 @@ GROUP BY genre
 HAVING COUNT(*) >= 50
 ORDER BY avg_popularity DESC;
 
--- ---------------------------------------------------------------------
--- 5. 2x2 STRATEGIC CONTENT SEGMENTATION
--- ---------------------------------------------------------------------
-
--- Content segment breakdown with average rating, popularity, and format mix
 SELECT 
     content_segment,
     COUNT(*) AS title_count,
@@ -173,8 +132,6 @@ FROM ott_titles
 GROUP BY content_segment
 ORDER BY title_count DESC;
 
--- Strategic Action: Top Hidden Gems (Rating >= 8.0, Low Popularity)
--- High-priority candidates for recommendation carousels and marketing promotion
 SELECT 
     title,
     type,
@@ -190,8 +147,6 @@ WHERE content_segment LIKE '%Hidden Gems%'
 ORDER BY rating_score DESC, popularity ASC
 LIMIT 15;
 
--- Strategic Action: Catalog Bloat Review (Rating <= 4.5, Popularity <= 25.0)
--- Prime candidates for contract non-renewal / de-licensing
 SELECT 
     title,
     type,
@@ -207,11 +162,6 @@ WHERE content_segment LIKE '%Underperformers%'
 ORDER BY rating_score ASC, popularity ASC
 LIMIT 15;
 
--- ---------------------------------------------------------------------
--- 6. DATA VALIDATION & RECONCILIATION CHECKS
--- ---------------------------------------------------------------------
-
--- Cross-checking total rows, non-null IDs, missing values, and min/max ranges
 SELECT 
     COUNT(*) AS total_rows,
     COUNT(title_id) AS non_null_ids,

@@ -1,12 +1,5 @@
--- =====================================================================
--- OTT Content Strategy & Audience Insights - PostgreSQL DDL & Load Script
--- Database: PostgreSQL 14+ / DuckDB / SQLite Compatible
--- =====================================================================
-
--- Drop table if exists
 DROP TABLE IF EXISTS ott_titles;
 
--- Create table schema
 CREATE TABLE ott_titles (
     title_id VARCHAR(32) PRIMARY KEY,
     title VARCHAR(512) NOT NULL,
@@ -24,7 +17,6 @@ CREATE TABLE ott_titles (
     is_recent_release SMALLINT NOT NULL DEFAULT 0
 );
 
--- Recommended Indexes for Analytics Performance
 CREATE INDEX idx_ott_type ON ott_titles (type);
 CREATE INDEX idx_ott_release_year ON ott_titles (release_year);
 CREATE INDEX idx_ott_genre ON ott_titles (genre);
@@ -32,6 +24,3 @@ CREATE INDEX idx_ott_language ON ott_titles (language);
 CREATE INDEX idx_ott_country ON ott_titles (country);
 CREATE INDEX idx_ott_rating ON ott_titles (rating);
 CREATE INDEX idx_ott_content_segment ON ott_titles (content_segment);
-
--- Data Load Command for PostgreSQL (execute in psql or pgAdmin):
--- \copy ott_titles FROM '../data/processed/ott_titles.csv' WITH (FORMAT csv, HEADER true, DELIMITER ',');

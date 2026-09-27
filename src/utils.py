@@ -1,19 +1,11 @@
-"""
-Utility functions for data loading, metric formatting, and segmentation benchmarks.
-Author: Ranjith Kumar
-"""
 import os
 import pandas as pd
 
 def get_project_root():
-    """Returns the absolute path to the project root directory."""
     current_dir = os.path.dirname(os.path.abspath(__file__))
     return os.path.dirname(current_dir)
 
 def load_catalog(processed=True):
-    """
-    Loads either the processed or raw catalog as a pandas DataFrame.
-    """
     root = get_project_root()
     if processed:
         file_path = os.path.join(root, "data", "processed", "ott_titles.csv")
@@ -29,10 +21,6 @@ def load_catalog(processed=True):
     return df
 
 def get_benchmarks(df):
-    """
-    Computes catalog medians for rating and popularity.
-    Used for 2x2 quadrant segmentation cutoffs.
-    """
     median_rating = round(df['rating_score'].median(), 2)
     median_pop = round(df['popularity'].median(), 2)
     return {
