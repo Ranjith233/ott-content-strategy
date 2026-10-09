@@ -1,6 +1,6 @@
 # 🎬 OTT Content Strategy & Audience Insights
 **An End-to-End Data Analytics & Strategy Portfolio Project**  
-*Built by [Ranjith Kumar](https://github.com/your-username) • Python, PostgreSQL/DuckDB, Streamlit, Tableau/Power BI*
+*Built by [Ranjith Kumar](https://github.com/Ranjith233) • Python, PostgreSQL/DuckDB, Streamlit, Tableau/Power BI*
 
 ![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=flat&logo=python&logoColor=white)
 ![SQL](https://img.shields.io/badge/SQL-PostgreSQL%20%7C%20DuckDB-336791?style=flat&logo=postgresql&logoColor=white)
@@ -182,7 +182,7 @@ If you are showcasing this project on your resume, here are high-impact bullets 
 
 ### 1. Clone & Set Up Virtual Environment:
 ```bash
-git clone https://github.com/your-username/ott-content-strategy.git
+git clone https://github.com/Ranjith233/ott-content-strategy.git
 cd ott-content-strategy
 python -m venv .venv
 
