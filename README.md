@@ -38,8 +38,7 @@ ott-content-strategy/
 │   │   └── ott_titles_raw.csv           # Raw catalog dump with documented anomalies
 │   └── processed/
 │       ├── ott_titles.csv               # Cleaned & standardized dataset (8,806 titles)
-│       ├── ott.duckdb                   # Columnar database for fast SQL analysis
-│       └── ott.db                       # SQLite database for lightweight querying
+│       └── ott.duckdb                   # Columnar database for fast SQL analysis
 ├── notebooks/
 │   └── 01_data_cleaning_and_eda.ipynb   # Step-by-step EDA, visualizations & narrative
 ├── sql/

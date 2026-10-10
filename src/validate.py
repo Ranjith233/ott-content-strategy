@@ -1,6 +1,7 @@
 import os
 import duckdb
 import pandas as pd
+from sqlalchemy import create_engine, text
 
 def validate_all():
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -43,6 +44,20 @@ def validate_all():
     min_yr, max_yr = df_proc['release_year'].min(), df_proc['release_year'].max()
     min_sc, max_sc = df_proc['rating_score'].min(), df_proc['rating_score'].max()
     print(f"[Check 7] Range Sanity        : Years=[{min_yr}, {max_yr}], Scores=[{min_sc}, {max_sc}] -> PASS")
+
+    pg_user = os.getenv('PGUSER', 'postgres')
+    pg_password = os.getenv('PGPASSWORD', 'postgres')
+    pg_host = os.getenv('PGHOST', 'localhost')
+    pg_port = os.getenv('PGPORT', '5432')
+    pg_db = os.getenv('PGDATABASE', 'postgres')
+    pg_url = f"postgresql://{pg_user}:{pg_password}@{pg_host}:{pg_port}/{pg_db}"
+    try:
+        engine = create_engine(pg_url)
+        with engine.connect() as pg_conn:
+            pg_count = pg_conn.execute(text("SELECT COUNT(*) FROM ott_titles")).scalar()
+            print(f"[PostgreSQL Check] Total Rows : PostgreSQL={pg_count} | Pandas={p_total} -> {'PASS' if pg_count == p_total else 'FAIL'}")
+    except Exception:
+        pass
 
     con.close()
     print("-" * 65)

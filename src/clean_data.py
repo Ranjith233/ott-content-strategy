@@ -3,7 +3,7 @@ import re
 import numpy as np
 import pandas as pd
 import duckdb
-import sqlite3
+from sqlalchemy import create_engine
 
 def run_cleaning():
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -13,7 +13,6 @@ def run_cleaning():
     
     proc_csv = os.path.join(proc_dir, "ott_titles.csv")
     duckdb_path = os.path.join(proc_dir, "ott.duckdb")
-    sqlite_path = os.path.join(proc_dir, "ott.db")
     
     df = pd.read_csv(raw_path)
 
@@ -106,9 +105,17 @@ def run_cleaning():
     con_duck.execute("CREATE TABLE ott_titles AS SELECT * FROM df_clean")
     con_duck.close()
 
-    con_sqlite = sqlite3.connect(sqlite_path)
-    df_clean.to_sql("ott_titles", con_sqlite, if_exists="replace", index=False)
-    con_sqlite.close()
+    pg_user = os.getenv('PGUSER', 'postgres')
+    pg_password = os.getenv('PGPASSWORD', 'postgres')
+    pg_host = os.getenv('PGHOST', 'localhost')
+    pg_port = os.getenv('PGPORT', '5432')
+    pg_db = os.getenv('PGDATABASE', 'postgres')
+    pg_url = f"postgresql://{pg_user}:{pg_password}@{pg_host}:{pg_port}/{pg_db}"
+    try:
+        engine = create_engine(pg_url)
+        df_clean.to_sql("ott_titles", engine, if_exists="replace", index=False)
+    except Exception:
+        pass
 
     return df_clean
 
